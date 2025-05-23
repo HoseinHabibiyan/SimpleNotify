@@ -4,6 +4,10 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>SimpleNotify</Title>
+        <Authors>Hosein Habibiyan</Authors>
+        <RepositoryUrl>https://github.com/HoseinHabibiyan/SimpleNotify</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
