@@ -69,6 +69,6 @@ await _simpleNotifySender.Publish(new AddOrderNotify(orderId));
 ```
 
 ## 🤝 Contribute
-Contributions are always welcome!
-Found a bug or have an idea?  
-Feel free to open an issue or submit a pull request.
+- Contributions are always welcome!
+- Found a bug or have an idea?  
+- Feel free to open an issue or submit a pull request.
