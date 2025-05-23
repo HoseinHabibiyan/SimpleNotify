@@ -1,4 +1,4 @@
-namespace SimpleNotify;
+namespace SimpleNotify.Contracts;
 
 public interface ISimpleNotifySender
 {
