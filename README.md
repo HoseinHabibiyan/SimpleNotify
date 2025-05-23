@@ -48,9 +48,9 @@ public record AddOrderNotify(Guid OrderId) : INotification<AddOrderNotify>;
 ```
 public class AddOrderNotificationHandler : INotificationHandler<AddOrderNotify>
 {
-    public ValueTask Handle(AddOrderNotify source)
+    public ValueTask Handle(AddOrderNotify notification)
     {
-        Console.WriteLine($"Order {source.OrderId} has been added");
+        Console.WriteLine($"Order {notification.OrderId} has been added");
         return ValueTask.CompletedTask;
     }
 }
