@@ -3,7 +3,7 @@ using SimpleNotify.Contracts;
 
 namespace SimpleNotify;
 
-public class SimpleNotifySender(IServiceProvider serviceProvider) : ISimpleNotifySender
+public class NotificationSender(IServiceProvider serviceProvider) : INotificationSender
 {
     public async ValueTask Publish<TNotification>(TNotification notification) where TNotification : INotification<TNotification>
     {

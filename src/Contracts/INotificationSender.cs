@@ -1,6 +1,6 @@
 namespace SimpleNotify.Contracts;
 
-public interface ISimpleNotifySender
+public interface INotificationSender
 {
     ValueTask Publish<TNotification>(TNotification notification) where TNotification : INotification<TNotification>;
 }

@@ -23,7 +23,7 @@ public static class ServiceRegistrar
             throw new ArgumentException(
                 $"[SimpleNotify::{nameof(AddSimpleNotify)}] Argument '{nameof(assembliesToScan)}' cannot be null or empty.");
 
-        services.AddScoped<ISimpleNotifySender, SimpleNotifySender>();
+        services.AddScoped<INotificationSender, NotificationSender>();
         assembliesToScan = assembliesToScan.Distinct().ToArray();
 
         var handlerInterface = typeof(INotificationHandler<>);

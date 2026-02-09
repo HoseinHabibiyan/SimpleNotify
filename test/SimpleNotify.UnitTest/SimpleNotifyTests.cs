@@ -5,7 +5,7 @@ using SimpleNotify.Contracts;
 
 namespace SimpleNotify.UnitTest;
 
-public class SimpleNotifySenderTests
+public class NotificationSenderTests
 {
     [Fact]
     public async Task When_AddOrderNotification_Is_Published_Should_Invoke_Handler_As_Expected()
@@ -18,11 +18,11 @@ public class SimpleNotifySenderTests
         ServiceCollection serviceCollection = new();
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
-        SimpleNotifySender simpleNotifySender = new(serviceProvider);
+        NotificationSender notificationSender = new(serviceProvider);
 
         AddOrderNotification orderNotification = new(Guid.NewGuid().ToString(), new Random().Next());
 
-        serviceCollection.AddSimpleNotify<SimpleNotifySender>();
+        serviceCollection.AddSimpleNotify<NotificationSender>();
 
         INotificationHandler<AddOrderNotification> handler = new AddOrderNotificationHandler(writer);
         await handler.Handle(orderNotification);
@@ -31,7 +31,7 @@ public class SimpleNotifySenderTests
 
         #region Act
 
-        await simpleNotifySender.Publish(orderNotification);
+        await notificationSender.Publish(orderNotification);
 
         #endregion
 
@@ -55,9 +55,9 @@ public class SimpleNotifySenderTests
         ServiceCollection serviceCollection = new();
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
-        SimpleNotifySender simpleNotifySender = new(serviceProvider);
+        NotificationSender notificationSender = new(serviceProvider);
 
-        serviceCollection.AddSimpleNotify<SimpleNotifySender>();
+        serviceCollection.AddSimpleNotify<NotificationSender>();
 
         AddOrderNotification orderNotification = new(Guid.NewGuid().ToString(), new Random().Next());
 
@@ -74,7 +74,7 @@ public class SimpleNotifySenderTests
 
         #region Act
 
-        await simpleNotifySender.Publish(orderNotification);
+        await notificationSender.Publish(orderNotification);
 
         #endregion
 
