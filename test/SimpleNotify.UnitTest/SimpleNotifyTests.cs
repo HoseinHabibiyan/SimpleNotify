@@ -16,22 +16,23 @@ public class NotificationSenderTests
         var writer = new StringWriter(builder);
 
         ServiceCollection serviceCollection = new();
+        
+        serviceCollection.AddSimpleNotify<NotificationSenderTests>();
+        
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
         NotificationSender notificationSender = new(serviceProvider);
 
-        AddOrderNotification orderNotification = new(Guid.NewGuid().ToString(), new Random().Next());
-
-        serviceCollection.AddSimpleNotify<NotificationSender>();
-
-        INotificationHandler<AddOrderNotification> handler = new AddOrderNotificationHandler(writer);
-        await handler.Handle(orderNotification);
+        AddOrderNotification notification = new(Guid.NewGuid().ToString(), new Random().Next())
+        {
+            Writer = writer
+        };
 
         #endregion
 
         #region Act
 
-        await notificationSender.Publish(orderNotification);
+        await notificationSender.Publish(notification);
 
         #endregion
 
@@ -39,7 +40,7 @@ public class NotificationSenderTests
 
         string result = builder.ToString();
 
-        result.ShouldContain(orderNotification.ToString());
+        result.ShouldContain(notification.ToString());
 
         #endregion
     }
@@ -53,28 +54,23 @@ public class NotificationSenderTests
         var writer = new StringWriter(builder);
 
         ServiceCollection serviceCollection = new();
+        
+        serviceCollection.AddSimpleNotify<NotificationSenderTests>();
+        
         ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
         NotificationSender notificationSender = new(serviceProvider);
 
-        serviceCollection.AddSimpleNotify<NotificationSender>();
-
-        AddOrderNotification orderNotification = new(Guid.NewGuid().ToString(), new Random().Next());
-
-        INotificationHandler<AddOrderNotification> handler1 = new AddOrderNotificationHandler(writer);
-        await handler1.Handle(orderNotification);
-
-        INotificationHandler<AddOrderNotification> handler2 = new AddOrderNotificationHandler(writer);
-        await handler2.Handle(orderNotification);
-
-        INotificationHandler<AddOrderNotification> handler3 = new AddOrderNotificationHandler(writer);
-        await handler3.Handle(orderNotification);
+        OrderAddedNotification notification = new(Guid.NewGuid().ToString(), new Random().Next())
+        {
+            Writer = writer
+        };
 
         #endregion
 
         #region Act
 
-        await notificationSender.Publish(orderNotification);
+        await notificationSender.Publish(notification);
 
         #endregion
 
@@ -84,10 +80,10 @@ public class NotificationSenderTests
 
         var expected = result.Split("\n")
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(x => x.Substring(0, orderNotification.ToString().Length)).ToList();
+            .Select(x => x.Substring(0, notification.ToString().Length)).ToList();
 
         expected.Count.ShouldBe(3);
-        expected.ShouldAllBe(x => x.Substring(0, orderNotification.ToString().Length) == orderNotification.ToString());
+        expected.ShouldAllBe(x => x.Substring(0, notification.ToString().Length) == notification.ToString());
         expected.GroupBy(x => x).Count().ShouldBe(1);
 
         #endregion
@@ -100,13 +96,54 @@ public class NotificationSenderTests
         Should.Throw<ArgumentException>(() => services.AddSimpleNotify([]));
     }
 
-    private record AddOrderNotification(string OrderNumber, int Quantity) : INotification<AddOrderNotification>;
+    private record AddOrderNotification(string OrderNumber, int Quantity) : INotification<AddOrderNotification>
+    {
+        public TextWriter Writer { get; init; } = TextWriter.Null;
+        
+        public override string ToString()
+            => $"{nameof(AddOrderNotification)} {{ OrderNumber = {OrderNumber}, Quantity = {Quantity} }}";
+    }
 
-    private record AddOrderNotificationHandler(TextWriter Writer) : INotificationHandler<AddOrderNotification>
+    private record AddOrderNotificationHandler : INotificationHandler<AddOrderNotification>
     {
         public ValueTask Handle(AddOrderNotification notification)
         {
-            Writer.WriteLine($"{notification} :: {Guid.NewGuid()}");
+            notification.Writer.WriteLine($"{notification} :: {Guid.NewGuid()}");
+            return ValueTask.CompletedTask;
+        }
+    }
+    
+    private record OrderAddedNotification(string OrderNumber, int Quantity) : INotification<OrderAddedNotification>
+    {
+        public TextWriter Writer { get; init; } = TextWriter.Null;
+        
+        public override string ToString()
+            => $"{nameof(AddOrderNotification)} {{ OrderNumber = {OrderNumber}, Quantity = {Quantity} }}";
+    }
+    
+    private record OrderAddedNotificationHandler1 : INotificationHandler<OrderAddedNotification>
+    {
+        public ValueTask Handle(OrderAddedNotification notification)
+        {
+            notification.Writer.WriteLine($"{notification} :: {Guid.NewGuid()}");
+            return ValueTask.CompletedTask;
+        }
+    }
+    
+    private record OrderAddedNotificationHandler2: INotificationHandler<OrderAddedNotification>
+    {
+        public ValueTask Handle(OrderAddedNotification notification)
+        {
+            notification.Writer.WriteLine($"{notification} :: {Guid.NewGuid()}");
+            return ValueTask.CompletedTask;
+        }
+    }
+    
+    private record OrderAddedNotificationHandler3 : INotificationHandler<OrderAddedNotification>
+    {
+        public ValueTask Handle(OrderAddedNotification notification)
+        {
+            notification.Writer.WriteLine($"{notification} :: {Guid.NewGuid()}");
             return ValueTask.CompletedTask;
         }
     }
